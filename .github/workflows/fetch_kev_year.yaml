@@ -25,7 +25,7 @@ jobs:
       run: |
         rm -rf data
         mkdir -p data
-        tail -n +2 cisa_kev.csv | while IFS=$'\t' read -r cveID vendorProject product vulnerabilityName dateAdded shortDescription requiredAction dueDate knownRansomwareCampaignUse notes cwes; do
+        tail -n +2 cisa_kev.csv | while IFS=$',' read -r cveID vendorProject product vulnerabilityName dateAdded shortDescription requiredAction dueDate knownRansomwareCampaignUse notes cwes; do
           year=$(echo "$cveID" | cut -d '-' -f 2)
           echo -e "$cveID\t$vendorProject\t$product\t$vulnerabilityName\t$dateAdded\t$shortDescription\t$requiredAction\t$dueDate\t$knownRansomwareCampaignUse\t$notes\t$cwes" >> "data/cisa_kev_${year}.csv"
         done
