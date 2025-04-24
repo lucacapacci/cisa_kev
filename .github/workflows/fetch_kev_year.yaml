@@ -25,15 +25,40 @@ jobs:
       run: |
         rm -rf data
         mkdir -p data
-        tail -n +2 cisa_kev.csv | while IFS=$',' read -r cveID vendorProject product vulnerabilityName dateAdded shortDescription requiredAction dueDate knownRansomwareCampaignUse notes cwes; do
-          year=$(echo "$cveID" | cut -d '-' -f 2)
-          echo -e "$cveID,$vendorProject,$product,$vulnerabilityName,$dateAdded,$shortDescription,$requiredAction,$dueDate,$knownRansomwareCampaignUse,$notes,$cwes" >> "data/cisa_kev_${year}.csv"
-        done
+        python3 <<EOF
+import csv
+import os
+from collections import defaultdict
 
-        # Add headers to all output files
-        for f in data/cisa_kev_*.csv; do
-          (echo -e "cveID,vendorProject,product,vulnerabilityName,dateAdded,shortDescription,requiredAction,dueDate,knownRansomwareCampaignUse,notes,cwes"; cat "$f") > "${f}.tmp" && mv "${f}.tmp" "$f"
-        done
+input_file = 'cisa_kev.csv'
+output_dir = 'data'
+files = {}
+
+with open(input_file, newline='', encoding='utf-8') as csvfile:
+    reader = csv.DictReader(csvfile)
+    headers = reader.fieldnames
+
+    output_data = defaultdict(list)
+
+    for row in reader:
+        cve_id = row.get("cveID", "")
+        if '-' not in cve_id:
+            continue
+        try:
+            year = cve_id.split('-')[1]
+            if len(year) == 2:
+                year = "20" + year  # Handle edge case like CVE-21-...
+        except IndexError:
+            continue
+        output_data[year].append(row)
+
+    for year, rows in output_data.items():
+        file_path = os.path.join(output_dir, f'cisa_kev_{year}.csv')
+        with open(file_path, 'w', newline='', encoding='utf-8') as f_out:
+            writer = csv.DictWriter(f_out, fieldnames=headers)
+            writer.writeheader()
+            writer.writerows(rows)
+EOF
 
     - name: Commit and push changes
       run: |
