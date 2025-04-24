@@ -5,7 +5,6 @@ on:
     - cron: '0 0,8,16 * * *'  # Every 8 hours
   workflow_dispatch:
 
-
 permissions:
   contents: write
 
@@ -21,10 +20,11 @@ jobs:
       run: |
         curl -L -o cisa_kev.csv https://www.cisa.gov/sites/default/files/csv/known_exploited_vulnerabilities.csv
 
-    - name: Split CSV by CVE year
+    - name: Split CSV by CVE year using Python
       run: |
         rm -rf data
         mkdir -p data
+
         python3 <<EOF
 import csv
 import os
