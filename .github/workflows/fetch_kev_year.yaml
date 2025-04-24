@@ -31,7 +31,7 @@ jobs:
 
         # Add headers to all output files
         for f in data/cisa_kev_*.csv; do
-          (echo -e "cveID\tvendorProject\tproduct\tvulnerabilityName\tdateAdded\tshortDescription\trequiredAction\tdueDate\tknownRansomwareCampaignUse\tnotes\tcwes"; cat "$f") > "${f}.tmp" && mv "${f}.tmp" "$f"
+          (echo -e "cveID,vendorProject,product\tvulnerabilityName\tdateAdded\tshortDescription\trequiredAction\tdueDate\tknownRansomwareCampaignUse\tnotes\tcwes"; cat "$f") > "${f}.tmp" && mv "${f}.tmp" "$f"
         done
 
     - name: Commit and push changes
