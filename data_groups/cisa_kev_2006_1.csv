@@ -1,0 +1,2 @@
+cveID,vendorProject,product,vulnerabilityName,dateAdded,shortDescription,requiredAction,dueDate,knownRansomwareCampaignUse,notes,cwes
+CVE-2006-1547,Apache,"Struts 1","Apache Struts 1 ActionForm Denial-of-Service Vulnerability",2022-01-21,"ActionForm in Apache Struts versions before 1.2.9 with BeanUtils 1.7 contains a vulnerability that allows for denial-of-service (DoS).","Apply updates per vendor instructions.",2022-07-21,Unknown,https://nvd.nist.gov/vuln/detail/CVE-2006-1547,

@@ -1,0 +1,2 @@
+cveID,vendorProject,product,vulnerabilityName,dateAdded,shortDescription,requiredAction,dueDate,knownRansomwareCampaignUse,notes,cwes
+CVE-2019-4716,IBM,"Planning Analytics","IBM Planning Analytics Remote Code Execution Vulnerability",2021-11-03,"IBM Planning Analytics is vulnerable to a configuration overwrite that allows an unauthenticated user to login as ""admin"", and then execute code as root or SYSTEM via TM1 scripting.","Apply updates per vendor instructions.",2022-05-03,Unknown,https://nvd.nist.gov/vuln/detail/CVE-2019-4716,CWE-94

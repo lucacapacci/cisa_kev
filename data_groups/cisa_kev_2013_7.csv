@@ -1,0 +1,2 @@
+cveID,vendorProject,product,vulnerabilityName,dateAdded,shortDescription,requiredAction,dueDate,knownRansomwareCampaignUse,notes,cwes
+CVE-2013-7331,Microsoft,"Internet Explorer","Microsoft Internet Explorer Information Disclosure Vulnerability",2022-05-25,"An information disclosure vulnerability exists in Internet Explorer which allows resources loaded into memory to be queried. This vulnerability could allow an attacker to detect anti-malware applications.","Apply updates per vendor instructions.",2022-06-15,Unknown,https://nvd.nist.gov/vuln/detail/CVE-2013-7331,CWE-200
