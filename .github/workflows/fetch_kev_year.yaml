@@ -1,0 +1,43 @@
+name: Download CISA KEV File - split year
+
+on:
+  schedule:
+    - cron: '0 0,8,16 * * *'  # Every 8 hours
+  workflow_dispatch:
+
+
+permissions:
+  contents: write
+
+jobs:
+  download-process-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Download KEV .csv file
+      run: |
+        curl -L -o cisa_kev.csv https://www.cisa.gov/sites/default/files/csv/known_exploited_vulnerabilities.csv
+
+    - name: Split CSV by CVE year
+      run: |
+        mkdir -p data
+        tail -n +2 cisa_kev.csv | while IFS=$'\t' read -r cveID vendorProject product vulnerabilityName dateAdded shortDescription requiredAction dueDate knownRansomwareCampaignUse notes cwes; do
+          year=$(echo "$cveID" | cut -d '-' -f 2)
+          echo -e "$cveID\t$vendorProject\t$product\t$vulnerabilityName\t$dateAdded\t$shortDescription\t$requiredAction\t$dueDate\t$knownRansomwareCampaignUse\t$notes\t$cwes" >> "data/cisa_kev_${year}.csv"
+        done
+
+        # Add headers to all output files
+        for f in data/cisa_kev_*.csv; do
+          (echo -e "cveID\tvendorProject\tproduct\tvulnerabilityName\tdateAdded\tshortDescription\trequiredAction\tdueDate\tknownRansomwareCampaignUse\tnotes\tcwes"; cat "$f") > "${f}.tmp" && mv "${f}.tmp" "$f"
+        done
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add data/
+        git commit -m "Split KEV data by CVE year on $(date -u +'%Y-%m-%d %H:%M:%S UTC')" || echo "No changes to commit"
+        git push
