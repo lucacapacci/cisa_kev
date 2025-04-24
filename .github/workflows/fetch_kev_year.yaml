@@ -23,6 +23,7 @@ jobs:
 
     - name: Split CSV by CVE year
       run: |
+        rm -rf data
         mkdir -p data
         tail -n +2 cisa_kev.csv | while IFS=$'\t' read -r cveID vendorProject product vulnerabilityName dateAdded shortDescription requiredAction dueDate knownRansomwareCampaignUse notes cwes; do
           year=$(echo "$cveID" | cut -d '-' -f 2)
@@ -31,7 +32,7 @@ jobs:
 
         # Add headers to all output files
         for f in data/cisa_kev_*.csv; do
-          (echo -e "cveID,vendorProject,product\tvulnerabilityName\tdateAdded\tshortDescription\trequiredAction\tdueDate\tknownRansomwareCampaignUse\tnotes\tcwes"; cat "$f") > "${f}.tmp" && mv "${f}.tmp" "$f"
+          (echo -e "cveID,vendorProject,product,vulnerabilityName,dateAdded,shortDescription,requiredAction,dueDate,knownRansomwareCampaignUse,notes,cwes"; cat "$f") > "${f}.tmp" && mv "${f}.tmp" "$f"
         done
 
     - name: Commit and push changes
