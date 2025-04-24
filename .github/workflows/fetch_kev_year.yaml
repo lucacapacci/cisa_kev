@@ -20,42 +20,29 @@ jobs:
       run: |
         curl -L -o cisa_kev.csv https://www.cisa.gov/sites/default/files/csv/known_exploited_vulnerabilities.csv
 
-    - name: Split CSV by CVE year using Python
+    - name: Split CSV by CVE year using Bash + awk
       run: |
         rm -rf data
         mkdir -p data
 
-        python3 - <<'EOF'
-import csv
-import os
-from collections import defaultdict
+        header=$(head -n1 cisa_kev.csv)
 
-input_file = 'cisa_kev.csv'
-output_dir = 'data'
-os.makedirs(output_dir, exist_ok=True)
-
-with open(input_file, newline='', encoding='utf-8') as csvfile:
-    reader = csv.DictReader(csvfile)
-    headers = reader.fieldnames
-    data_by_year = defaultdict(list)
-
-    for row in reader:
-        cve_id = row.get("cveID", "")
-        if '-' in cve_id:
-            parts = cve_id.split('-')
-            if len(parts) >= 2:
-                year = parts[1]
-                if len(year) == 2:  # Handle CVE-21-... (assume 2021+)
-                    year = '20' + year
-                data_by_year[year].append(row)
-
-    for year, rows in data_by_year.items():
-        output_path = os.path.join(output_dir, f'cisa_kev_{year}.csv')
-        with open(output_path, 'w', newline='', encoding='utf-8') as f_out:
-            writer = csv.DictWriter(f_out, fieldnames=headers)
-            writer.writeheader()
-            writer.writerows(rows)
-EOF
+        # Use awk to extract lines by year
+        tail -n +2 cisa_kev.csv | awk -v header="$header" -F, '
+          BEGIN { OFS="," }
+          {
+            match($1, /CVE-([0-9]{4})-/, arr)
+            year = arr[1]
+            if (year != "") {
+              file = "data/cisa_kev_" year ".csv"
+              if (!(year in seen)) {
+                print header > file
+                seen[year] = 1
+              }
+              print >> file
+            }
+          }
+        '
 
     - name: Commit and push changes
       run: |
