@@ -1,0 +1,2 @@
+cveID,vendorProject,product,vulnerabilityName,dateAdded,shortDescription,requiredAction,dueDate,knownRansomwareCampaignUse,notes,cwes
+CVE-2015-6175,Microsoft,Windows,"Microsoft Windows Kernel Privilege Escalation Vulnerability",2022-05-25,"The kernel in Microsoft Windows contains a vulnerability that allows local users to gain privileges via a crafted application.","Apply updates per vendor instructions.",2022-06-15,Unknown,https://nvd.nist.gov/vuln/detail/CVE-2015-6175,CWE-264

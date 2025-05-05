@@ -1,0 +1,2 @@
+cveID,vendorProject,product,vulnerabilityName,dateAdded,shortDescription,requiredAction,dueDate,knownRansomwareCampaignUse,notes,cwes
+CVE-2021-0920,Android,Kernel,"Android Kernel Race Condition Vulnerability",2022-05-23,"Android kernel contains a race condition, which allows for a use-after-free vulnerability. Exploitation can allow for privilege escalation.","Apply updates per vendor instructions.",2022-06-13,Unknown,https://nvd.nist.gov/vuln/detail/CVE-2021-0920,"CWE-362, CWE-416"

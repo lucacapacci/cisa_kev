@@ -1,0 +1,2 @@
+cveID,vendorProject,product,vulnerabilityName,dateAdded,shortDescription,requiredAction,dueDate,knownRansomwareCampaignUse,notes,cwes
+CVE-2012-3152,Oracle,"Fusion Middleware","Oracle Fusion Middleware Unspecified Vulnerability",2021-11-03,"Oracle Fusion Middleware Reports Developer contains an unspecified vulnerability that allows remote attackers to affect confidentiality and integrity of affected systems.","Apply updates per vendor instructions.",2022-05-03,Unknown,https://nvd.nist.gov/vuln/detail/CVE-2012-3152,
