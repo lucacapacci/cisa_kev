@@ -1,0 +1,80 @@
+name: Download CISA KEV File - All
+
+on:
+  schedule:
+    - cron: "0 */2 * * *"
+  workflow_dispatch:
+
+
+permissions:
+  contents: write
+
+jobs:
+  download-extract-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Download KEV .csv file
+      run: |
+        curl -L -o cisa_kev.csv https://www.cisa.gov/sites/default/files/csv/known_exploited_vulnerabilities.csv
+
+    - name: Split CSV by CVE year
+      run: |
+        rm -rf data_years
+        mkdir -p data_years
+
+        header=$(head -n1 cisa_kev.csv)
+
+        # Use awk to extract lines by year
+        tail -n +2 cisa_kev.csv | awk -v header="$header" -F, '
+          BEGIN { OFS="," }
+          {
+            match($1, /CVE-([0-9]{4})-/, arr)
+            year = arr[1]
+            if (year != "") {
+              file = "data_years/cisa_kev_" year ".csv"
+              if (!(year in seen)) {
+                print header > file
+                seen[year] = 1
+              }
+              print >> file
+            }
+          }
+        '
+        
+    - name: Split CSV by CVE year and group (1st digit after year)
+      run: |
+        rm -rf data_groups
+        mkdir -p data_groups
+
+        header=$(head -n1 cisa_kev.csv)
+
+        tail -n +2 cisa_kev.csv | awk -v header="$header" -F, '
+          BEGIN { OFS="," }
+          {
+            if (match($1, /CVE-([0-9]{4})-([0-9]+)/, arr)) {
+              year = arr[1]
+              num = arr[2]
+              group = substr(num, 1, 1)
+              filename = "data_groups/cisa_kev_" year "_" group ".csv"
+              if (!(filename in written)) {
+                print header > filename
+                written[filename] = 1
+              }
+              print >> filename
+            }
+          }
+        '
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add cisa_kev.csv
+        git add data_years/
+        git add data_groups/
+        git commit -m "Update CISA KEV data $(date -u +'%Y-%m-%d %H:%M:%S UTC')" || echo "No changes to commit"
+        git push
