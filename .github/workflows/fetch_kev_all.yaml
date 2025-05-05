@@ -68,6 +68,31 @@ jobs:
             }
           }
         '
+        
+    - name: Split CSV into individual CVE files by year
+      run: |
+        rm -rf data_single
+        mkdir -p data_single
+
+        header=$(head -n1 cisa_kev.csv)
+
+        tail -n +2 cisa_kev.csv | awk -v header="$header" -F, '
+          {
+            cve = $1
+            if (match(cve, /CVE-([0-9]{4})-[0-9]+/, arr)) {
+              year = arr[1]
+              dir = "data_single/" year
+              file = dir "/" cve ".csv"
+              if (!(file in seen)) {
+                cmd = "mkdir -p \"" dir "\""
+                system(cmd)
+                print header > file
+                seen[file] = 1
+              }
+              print >> file
+            }
+          }
+        '
 
     - name: Commit and push changes
       run: |
@@ -76,5 +101,6 @@ jobs:
         git add cisa_kev.csv
         git add data_years/
         git add data_groups/
+        git add data_single/
         git commit -m "Update CISA KEV data $(date -u +'%Y-%m-%d %H:%M:%S UTC')" || echo "No changes to commit"
         git push
