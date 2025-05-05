@@ -37,11 +37,15 @@ curl -L https://raw.githubusercontent.com/lucacapacci/cisa_kev/refs/heads/main/d
 
 ```python
 import requests
+import csv
+from io import StringIO
 
-url = "https://raw.githubusercontent.com/lucacapacci/cisa_kev/refs/heads/main/data_single/2025/CVE-2025-0108.csv"
+url = 'https://raw.githubusercontent.com/lucacapacci/cisa_kev/refs/heads/main/data_single/2025/CVE-2025-0108.csv'
 response = requests.get(url)
-
-print(response.text)
+csv_file = StringIO(response.text)
+reader = csv.reader(csv_file)
+for row in reader:
+    print(row)
 ```
 
 ---
